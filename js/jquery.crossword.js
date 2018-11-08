@@ -42,7 +42,7 @@
 				$actives,
 				activePosition = 0,
 				activeClueIndex = 0,
-				currOri,
+				currentOrientation,
 				targetInput,
 				mode = 'interacting',
 				solvedToggle = false,
@@ -51,7 +51,7 @@
 			var puzInit = {
 				
 				init: function() {
-					currOri = 'across'; // app's init orientation could move to config object
+					currentOrientation = 'across'; // app's init orientation could move to config object
 					
 					// Reorder the problems array ascending by POSITION
 					puzz.data.sort(function(a,b) {
@@ -67,11 +67,11 @@
 						switch(e.which) {
 							case 39:
 							case 37:
-								currOri = 'across';
+								currentOrientation = 'across';
 								break;
 							case 38:
 							case 40:
-								currOri = 'down';
+								currentOrientation = 'down';
 								break;
 							default:
 								break;
@@ -90,7 +90,7 @@
 
 							
 							if (e.keyCode === 8 || e.keyCode === 46) {
-								currOri === 'across' ? nav.nextPrevNav(e, 37) : nav.nextPrevNav(e, 38); 
+								currentOrientation === 'across' ? nav.nextPrevNav(e, 37) : nav.nextPrevNav(e, 38); 
 							} else {
 								nav.nextPrevNav(e);
 							}
@@ -163,7 +163,7 @@
 					
 					// Puzzle clues added to DOM in calcCoords(), so now immediately put mouse focus on first clue
 					clueLiEls = $('#puzzle-clues li');
-					$('#' + currOri + ' li' ).eq(0).addClass('clues-active').focus();
+					$('#' + currentOrientation + ' li' ).eq(0).addClass('clues-active').focus();
 				
 					// DELETE FOR BG
 					puzInit.buildTable();
@@ -191,7 +191,7 @@
 						}
 
 						// while we're in here, add clues to DOM!
-						$('#' + puzz.data[i].orientation).append('<li tabindex="1" data-position="' + i + '">' + puzz.data[i].clue + '</li>'); 
+						$('#' + puzz.data[i].orientation).append('<li tabindex="1" data-position="' + i + '" value="' + puzz.data[i].position + '">&nbsp;' + puzz.data[i].clue + '</li>'); 
 					}				
 					
 					// Calculate rows/cols by finding max coords of each entry, then picking the highest
@@ -240,20 +240,11 @@
 						var letters = puzz.data[x-1].answer.split('');
 
 						for (var i=0; i < entries[x-1].length; ++i) {
-							light = $(puzzCells +'[data-coords="' + entries[x-1][i] + '"]');
-							
-							// check if POSITION property of the entry on current go-round is same as previous. 
-							// If so, it means there's an across & down entry for the position.
-							// Therefore you need to subtract the offset when applying the entry class.
-							if(x > 1 ){
-								if (puzz.data[x-1].position === puzz.data[x-2].position) {
-									hasOffset = true;
-								};
-							}
+							light = $(puzzCells + '[data-coords="' + entries[x-1][i] + '"]');
 							
 							if($(light).empty()){
 								$(light)
-									.addClass('entry-' + (hasOffset ? x - positionOffset : x) + ' position-' + (x-1) )
+									.addClass('position-' + (x-1) )
 									.append('<input maxlength="1" val="" type="text" tabindex="-1" />');
 							}
 						};
@@ -261,9 +252,9 @@
 					};	
 					
 					// Put entry number in first 'light' of each entry, skipping it if already present
-					for (var i=1, p = entryCount; i < p; ++i) {
-						$groupedLights = $('.entry-' + i);
-						if(!$('.entry-' + i +':eq(0) span').length){
+					for (var i=0; i < entryCount; ++i) {
+						$groupedLights = $('.position-' + i);
+						if(!$('.position-' + i +':eq(0) span').length){
 							$groupedLights.eq(0)
 								.append('<span>' + puzz.data[i].position + '</span>');
 						}
@@ -311,7 +302,7 @@
 						return;
 					}
 					
-					currOri === 'across' ? nav.nextPrevNav(e, 39) : nav.nextPrevNav(e, 40);
+					currentOrientation === 'across' ? nav.nextPrevNav(e, 39) : nav.nextPrevNav(e, 40);
 					
 					//z++;
 					//console.log(z);
@@ -407,7 +398,7 @@
 					$('.active').eq(0).addClass('current');
 					
 					// store orientation for 'smart' auto-selecting next input
-					currOri = $('.clues-active').parent('ol').prop('id');
+					currentOrientation = $('.clues-active').parent('ol').prop('id');
 										
 					activeClueIndex = $(clueLiEls).index(e.target);
 					//console.log('updateByNav() activeClueIndex: '+activeClueIndex);
@@ -425,7 +416,7 @@
 						$('.clues-active').removeClass('.clues-active');
 												
 						next = $(clueLiEls[activeClueIndex]);
-						currOri = next.parent().prop('id');
+						currentOrientation = next.parent().prop('id');
 						activePosition = $(next).data('position');
 												
 						// skips over already-solved problems
@@ -441,7 +432,7 @@
 						clue = $(clueLiEls + '[data-position=' + activePosition + ']');
 						activeClueIndex = $(clueLiEls).index(clue);
 						
-						currOri = clue.parent().prop('id');
+						currentOrientation = clue.parent().prop('id');
 						
 					}
 						
@@ -509,12 +500,12 @@
 							e2Cell = $('.position-' + classes[1].split('-')[1] + ' input').index(el);
 
 							if(mode === "setting ui"){
-								currOri = e1Cell === 0 ? e1Ori : e2Ori; // change orientation if cell clicked was first in a entry of opposite direction
+								currentOrientation = e1Cell === 0 ? e1Ori : e2Ori; // change orientation if cell clicked was first in a entry of opposite direction
 							}
 
-							if(e1Ori === currOri){
+							if(e1Ori === currentOrientation){
 								activePosition = classes[0].split('-')[1];		
-							} else if(e2Ori === currOri){
+							} else if(e2Ori === currentOrientation){
 								activePosition = classes[1].split('-')[1];
 							}
 						} else {
