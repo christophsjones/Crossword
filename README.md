@@ -17,7 +17,7 @@ Issues:
 2. Answer checking should be turned off... perhaps only verification of entire puzzle
 3. Every keypress advances the cursor, only A-Z should
 4. Rebuses?
-5. change to capital letters by default (and make answers case-insensitive)
+5. ~~change to capital letters by default (and make answers case-insensitive)~~
 6. answers can be found in JS 
-7. squares aren't square
+7. ~~squares aren't square~~
 8. clues should scroll
