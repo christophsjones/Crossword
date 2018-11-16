@@ -20,4 +20,4 @@ Issues:
 5. ~~change to capital letters by default (and make answers case-insensitive)~~
 6. answers can be found in JS 
 7. ~~squares aren't square~~
-8. clues should scroll
+8. ~~clues should scroll~~
