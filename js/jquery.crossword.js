@@ -458,13 +458,14 @@
 				},
 				
 				highlightClue: function() {
-					var clue;				
+					var clue = $(clueLiEls + '[data-position=' + activePosition + ']');
 					$('.clues-active').removeClass('clues-active');
-					$(clueLiEls + '[data-position=' + activePosition + ']').addClass('clues-active');
-					
-					if (mode === 'interacting') {
-						clue = $(clueLiEls + '[data-position=' + activePosition + ']');
+					clue.addClass('clues-active');
+					clue[0].scrollIntoView(true);
+
+					if (mode === 'interacting') { // why do we have this condition? what are the other modes?
 						activeClueIndex = $(clueLiEls).index(clue);
+
 					};
 				},
 				
